@@ -1,0 +1,40 @@
+import os
+import time
+import numpy as np
+import cv2
+
+cap = cv2.VideoCapture(0)
+count = 0
+start_time = time.time()
+
+while True:
+    # Capture frame-by-frame
+    ret, frame = cap.read()
+
+    # If it's been 60 seconds, skip capturing frames
+    if time.time() - start_time < 60:
+        time.sleep(1)
+        continue
+
+    # Our operations on the frame come here
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+    # Save frame as JPEG file every 2 seconds
+    if time.time() - start_time >= 2:
+        cv2.imwrite("frame%d.jpg" % count, frame)
+        count += 1
+        start_time = time.time()
+
+    # Display the resulting frame
+    cv2.imshow('frame', gray)
+    if cv2.waitKey(1) & 0xFF == ord('q'):  # Press 'q' to exit
+        break
+
+# Release the capture
+cap.release()
+cv2.destroyAllWindows()
+
+# Clear all the files created by the program
+for file_name in os.listdir("."):
+    if file_name.startswith("frame") and file_name.endswith(".jpg"):
+        os.remove(file_name)
